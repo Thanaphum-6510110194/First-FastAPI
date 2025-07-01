@@ -26,6 +26,23 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
+# step 3 Pydantic model
+
+# 1 - Base
+class Item(BaseModel):
+    title: str
+    description: str
+    price: float
+
+# 2 - Request
+class ItemCreated(Item):
+    pass
+
+# 3 - Response
+class ItemResponse(Item):
+    id: int
+    class Config:
+        from_attributes = True
 
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: Union[str, None] = None):
