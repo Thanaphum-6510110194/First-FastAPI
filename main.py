@@ -1,16 +1,22 @@
 from fastapi import FastAPI, Request
 from typing import Union
 from pydantic import BaseModel
+from sqlalchemy import create_engine, Column, Integer, String, Float, Text
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, Session
+
+DATABASE_URL = "sqlite:///./sql_app.db"
+
+# instance class เริ่มต้นสำหรับ engine, SessionLocal และ Base
+engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
 
 app = FastAPI()
 
 class Item(BaseModel):
     name: str
     price: float
-
-@app.get("/hello")
-def hello_world():
-    return {"message": "Hello World"}
 
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: Union[str, None] = None):
