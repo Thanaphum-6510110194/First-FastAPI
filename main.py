@@ -7,16 +7,25 @@ from sqlalchemy.orm import sessionmaker, Session
 
 DATABASE_URL = "sqlite:///./sql_app.db"
 
-# instance class เริ่มต้นสำหรับ engine, SessionLocal และ Base
+# step 1 Create sqlalchemy engine
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
+# step 2 ORM class
+class ItemDB(Base):
+    __tablename__ = "items"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True)
+    description = Column(Text, nullable=True)
+    price = Column(Float, nullable=False)
+    tax = Column(Float, nullable=True)
+
+# สร้างฐานข้อมูล
+Base.metadata.create_all(bind=engine)
+
 app = FastAPI()
 
-class Item(BaseModel):
-    name: str
-    price: float
 
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: Union[str, None] = None):
